@@ -3,6 +3,9 @@ import DareClient from "./DareClient"
 
 const PROD = process.env.NEXT_PUBLIC_APP_URL || "https://dare-me-eight.vercel.app"
 
+export const dynamic = "force-dynamic"
+export const revalidate = 0
+
 export async function generateMetadata({ params, searchParams }: { params: { id: string }, searchParams: { desc?: string, stake?: string, from?: string, to?: string, status?: string, t?: string } }): Promise<Metadata> {
   const url = `${PROD}/dare/${params.id}`
   const sp = new URLSearchParams()
@@ -16,7 +19,7 @@ export async function generateMetadata({ params, searchParams }: { params: { id:
   const qs = sp.toString()
   const miniapp = {
     version: "1",
-    imageUrl: `${PROD}/dare/${params.id}/image${qs ? `?${qs}` : ''}`,
+    imageUrl: `${PROD}/api/dare/${params.id}/image${qs ? `?${qs}` : ''}`,
     button: {
       title: "Open Dare",
       action: {
