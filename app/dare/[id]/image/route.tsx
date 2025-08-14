@@ -9,7 +9,7 @@ function truncate(text: string, max: number): string {
   return text.length <= max ? text : text.slice(0, max - 1) + '…'
 }
 
-export async function GET(req: Request) {
+export async function GET(req: Request, _ctx: { params: { id: string } }) {
   try {
     const { searchParams } = new URL(req.url)
     const desc = truncate(searchParams.get('desc') || 'A bold new challenge', 90)
@@ -37,13 +37,20 @@ export async function GET(req: Request) {
           <div style={{ fontSize: 54, fontWeight: 900, textAlign: 'center', lineHeight: 1.2, maxWidth: 960 }}>{desc}</div>
           <div style={{ marginTop: 20, display: 'flex', gap: 18, fontSize: 28, opacity: 0.9 }}>
             <div>From {from}</div>
-            <div>→</div>
+            <div>-&gt;</div>
             <div>To {to}</div>
           </div>
-          <div style={{ marginTop: 20, fontSize: 36, fontWeight: 800 }}>${stake} • {status}</div>
+          <div style={{ marginTop: 20, fontSize: 36, fontWeight: 800 }}>${stake} | {status}</div>
         </div>
       ),
-      { width: 1200, height: 800, headers: { 'Cache-Control': 'public, immutable, no-transform, max-age=300' } }
+      {
+        width: 1200,
+        height: 800,
+        headers: {
+          'Cache-Control': 'public, immutable, no-transform, max-age=300',
+          'Content-Type': 'image/png',
+        },
+      }
     )
   } catch (e) {
     // Fallback minimal PNG via ImageResponse
@@ -55,7 +62,7 @@ export async function GET(req: Request) {
           Dare
         </div>
       ),
-      { width: 1200, height: 630 }
+      { width: 1200, height: 800 }
     )
   }
 }
