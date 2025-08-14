@@ -1,7 +1,7 @@
- 'use client'
+'use client'
 
-import { useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { sdk } from '@farcaster/miniapp-sdk'
@@ -9,6 +9,8 @@ import { sdk } from '@farcaster/miniapp-sdk'
 export default function ShareClient({ id }: { id: string }) {
   const qp = useSearchParams()
   const [copied, setCopied] = useState(false)
+  const retriedRef = useRef(false)
+  const router = useRouter()
 
   const desc = qp.get('desc') || 'A bold new challenge'
   const stake = qp.get('stake') || '20'
@@ -17,9 +19,16 @@ export default function ShareClient({ id }: { id: string }) {
   const status = qp.get('status') || 'pending'
 
   const imageUrl = useMemo(() => {
-    const sp = new URLSearchParams({ desc, stake, from, to, status })
+    const sp = new URLSearchParams({ desc, stake, from, to, status, t: String(Date.now()) })
+    try {
+      if (typeof window !== 'undefined') {
+        return `${window.location.origin}/dare/${id}/image?${sp.toString()}`
+      }
+    } catch {}
     return `/dare/${id}/image?${sp.toString()}`
   }, [id, desc, stake, from, to, status])
+
+  const [objectUrl, setObjectUrl] = useState<string | null>(null)
 
   const fullLink = useMemo(() => {
     if (typeof window === 'undefined') return ''
@@ -33,11 +42,37 @@ export default function ShareClient({ id }: { id: string }) {
     })()
   }, [])
 
+  useEffect(() => {
+    let revoked = false
+    let currentUrl: string | null = null
+    ;(async () => {
+      try {
+        const res = await fetch(imageUrl, { cache: 'no-store' })
+        if (!res.ok) throw new Error('image fetch failed')
+        const blob = await res.blob()
+        currentUrl = URL.createObjectURL(blob)
+        if (!revoked) setObjectUrl(currentUrl)
+      } catch {
+        if (!revoked) setObjectUrl(null)
+      }
+    })()
+    return () => {
+      revoked = true
+      if (currentUrl) URL.revokeObjectURL(currentUrl)
+    }
+  }, [imageUrl])
+
   const share = async () => {
+    // Temporarily disable Farcaster share; navigate to accept/reject page instead
+    // try {
+    //   await sdk.actions.composeCast({ text: fullLink })
+    //   return
+    // } catch {}
     try {
-      await sdk.actions.composeCast({ text: fullLink })
+      router.push(fullLink)
       return
     } catch {}
+    // Fallback: copy link if navigation isn't possible
     try {
       await navigator.clipboard.writeText(fullLink)
       setCopied(true)
@@ -54,7 +89,11 @@ export default function ShareClient({ id }: { id: string }) {
           <CardContent className="p-4 space-y-4">
             <div className="relative aspect-[3/2] w-full overflow-hidden rounded-md border border-border">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={imageUrl} alt="Dare preview" className="h-full w-full object-cover" />
+              <img
+                src={objectUrl || imageUrl}
+                alt="Dare preview"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
             </div>
             <div className="flex items-center justify-between">
               <div className="text-sm text-foreground/70">Preview your dare</div>
