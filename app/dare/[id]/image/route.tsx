@@ -31,7 +31,7 @@ export async function GET(req: Request, _ctx: { params: { id: string } }) {
             backgroundColor: '#0b0b15',
             color: '#fff',
             padding: 48,
-            fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system',
+            fontFamily: 'sans-serif',
           }}
         >
           <div style={{ fontSize: 54, fontWeight: 900, textAlign: 'center', lineHeight: 1.2, maxWidth: 960 }}>{desc}</div>
@@ -48,7 +48,6 @@ export async function GET(req: Request, _ctx: { params: { id: string } }) {
         height: 800,
         headers: {
           'Cache-Control': 'public, immutable, no-transform, max-age=300',
-          'Content-Type': 'image/png',
         },
       }
     )
