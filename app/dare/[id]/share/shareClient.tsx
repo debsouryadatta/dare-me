@@ -11,6 +11,7 @@ export default function ShareClient({ id }: { id: string }) {
   const [copied, setCopied] = useState(false)
   const retriedRef = useRef(false)
   const router = useRouter()
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : '')
 
   const desc = qp.get('desc') || 'A bold new challenge'
   const stake = qp.get('stake') || '20'
@@ -31,10 +32,9 @@ export default function ShareClient({ id }: { id: string }) {
   const [objectUrl, setObjectUrl] = useState<string | null>(null)
 
   const fullLink = useMemo(() => {
-    if (typeof window === 'undefined') return ''
     const sp = new URLSearchParams({ desc, stake, from, to, status })
-    return `${window.location.origin}/dare/${id}?${sp.toString()}`
-  }, [id, desc, stake, from, to, status])
+    return `${APP_URL}/dare/${id}?${sp.toString()}`
+  }, [APP_URL, id, desc, stake, from, to, status])
 
   useEffect(() => {
     ;(async () => {
