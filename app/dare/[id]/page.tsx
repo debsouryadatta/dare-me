@@ -19,7 +19,7 @@ export async function generateMetadata({ params, searchParams }: { params: { id:
   const qs = sp.toString()
   const miniapp = {
     version: "1",
-    imageUrl: `${PROD}/api/dare/${params.id}/image${qs ? `?${qs}` : ''}`,
+    imageUrl: `${PROD}/dare/${params.id}/image${qs ? `?${qs}` : ''}`,
     button: {
       title: "Open Dare",
       action: {

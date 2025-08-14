@@ -23,10 +23,10 @@ export default function ShareClient({ id }: { id: string }) {
     const sp = new URLSearchParams({ desc, stake, from, to, status, t: String(Date.now()) })
     try {
       if (typeof window !== 'undefined') {
-        return `${window.location.origin}/api/dare/${id}/image?${sp.toString()}`
+        return `${window.location.origin}/dare/${id}/image?${sp.toString()}`
       }
     } catch {}
-    return `/api/dare/${id}/image?${sp.toString()}`
+    return `/dare/${id}/image?${sp.toString()}`
   }, [id, desc, stake, from, to, status])
 
   const [objectUrl, setObjectUrl] = useState<string | null>(null)

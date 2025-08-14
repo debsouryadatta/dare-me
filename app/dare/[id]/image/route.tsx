@@ -9,14 +9,29 @@ function truncate(text: string, max: number): string {
   return text.length <= max ? text : text.slice(0, max - 1) + '…'
 }
 
-export async function GET(req: Request, _ctx: { params: { id: string } }) {
+export async function GET(req: Request, ctx: { params: { id: string } }) {
   try {
-    const { searchParams } = new URL(req.url)
+    const url = new URL(req.url)
+    const { searchParams } = url
     const desc = truncate(searchParams.get('desc') || 'A bold new challenge', 90)
     const stake = String(searchParams.get('stake') || '20')
     const from = truncate(searchParams.get('from') || 'Someone', 24)
     const to = truncate(searchParams.get('to') || 'Friend', 24)
     const status = (searchParams.get('status') || 'pending').toUpperCase()
+
+    // Server-side logs (visible in Vercel logs)
+    try {
+      console.log('[og-dare]', {
+        id: ctx?.params?.id,
+        url: url.toString(),
+        desc,
+        stake,
+        from,
+        to,
+        status,
+        time: new Date().toISOString(),
+      })
+    } catch {}
 
     return new ImageResponse(
       (
@@ -34,13 +49,13 @@ export async function GET(req: Request, _ctx: { params: { id: string } }) {
             fontFamily: 'sans-serif',
           }}
         >
-          <div style={{ fontSize: 54, fontWeight: 900, textAlign: 'center', lineHeight: 1.2, maxWidth: 960 }}>{desc}</div>
+          <div style={{ display: 'flex', fontSize: 54, fontWeight: 900, textAlign: 'center', lineHeight: 1.2, maxWidth: 960 }}>{desc}</div>
           <div style={{ marginTop: 20, display: 'flex', gap: 18, fontSize: 28, opacity: 0.9 }}>
-            <div>From {from}</div>
-            <div>-&gt;</div>
-            <div>To {to}</div>
+            <div style={{ display: 'flex' }}>{`From ${from}`}</div>
+            <div style={{ display: 'flex' }}>{'->'}</div>
+            <div style={{ display: 'flex' }}>{`To ${to}`}</div>
           </div>
-          <div style={{ marginTop: 20, fontSize: 36, fontWeight: 800 }}>${stake} | {status}</div>
+          <div style={{ display: 'flex', marginTop: 20, fontSize: 36, fontWeight: 800 }}>{`$${stake} | ${status}`}</div>
         </div>
       ),
       {
@@ -52,6 +67,9 @@ export async function GET(req: Request, _ctx: { params: { id: string } }) {
       }
     )
   } catch (e) {
+    try {
+      console.error('[og-dare:error]', (e as Error)?.message)
+    } catch {}
     // Fallback minimal PNG via ImageResponse
     return new ImageResponse(
       (
