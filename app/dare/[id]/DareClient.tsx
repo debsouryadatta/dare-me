@@ -114,6 +114,18 @@ export default function DareClient({ id }: { id: string }) {
               {status === 'accepted' && (
                 <Button onClick={complete}>Mark Completed</Button>
               )}
+              {status !== 'rejected' && (
+                <>
+                  <Button variant="outline" onClick={() => {
+                    const params = new URLSearchParams({ desc: description, stake: String(stake), from, to, status })
+                    router.push(`/dare/${id}/proof?${params.toString()}`)
+                  }}>Submit Proof</Button>
+                  <Button variant="outline" onClick={() => {
+                    const params = new URLSearchParams({ desc: description, stake: String(stake), from, to, status })
+                    router.push(`/dare/${id}/review?${params.toString()}`)
+                  }}>Review Proof</Button>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>

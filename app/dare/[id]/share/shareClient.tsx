@@ -64,14 +64,14 @@ export default function ShareClient({ id }: { id: string }) {
 
   const share = async () => {
     // Temporarily disable Farcaster share; navigate to accept/reject page instead
-    // try {
-    //   await sdk.actions.composeCast({ text: fullLink })
-    //   return
-    // } catch {}
     try {
-      router.push(fullLink)
+      await sdk.actions.composeCast({ text: fullLink })
       return
     } catch {}
+    // try {
+    //   router.push(fullLink)
+    //   return
+    // } catch {}
     // Fallback: copy link if navigation isn't possible
     try {
       await navigator.clipboard.writeText(fullLink)
