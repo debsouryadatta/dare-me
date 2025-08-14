@@ -28,7 +28,7 @@ export async function GET(req: Request) {
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            background: 'linear-gradient(135deg, #0b0b15, #111827)',
+            backgroundColor: '#0b0b15',
             color: '#fff',
             padding: 48,
             fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system',

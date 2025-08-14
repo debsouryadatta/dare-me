@@ -11,7 +11,8 @@ export async function generateMetadata({ params, searchParams }: { params: { id:
   if (searchParams?.from) sp.set('from', searchParams.from)
   if (searchParams?.to) sp.set('to', searchParams.to)
   if (searchParams?.status) sp.set('status', searchParams.status)
-  if (searchParams?.t) sp.set('t', searchParams.t)
+  // Always include a cache-busting token to avoid stale previews in Farcaster
+  sp.set('t', searchParams?.t ?? String(Math.floor(Date.now() / 1000)))
   const qs = sp.toString()
   const miniapp = {
     version: "1",
