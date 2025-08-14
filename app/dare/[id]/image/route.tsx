@@ -43,7 +43,7 @@ export async function GET(req: Request) {
           <div style={{ marginTop: 20, fontSize: 36, fontWeight: 800 }}>${stake} • {status}</div>
         </div>
       ),
-      { width: 1200, height: 630, headers: { 'Cache-Control': 'no-store' } }
+      { width: 1200, height: 800, headers: { 'Cache-Control': 'public, immutable, no-transform, max-age=300' } }
     )
   } catch (e) {
     // Fallback minimal PNG via ImageResponse
