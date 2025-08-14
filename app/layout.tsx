@@ -4,7 +4,7 @@ import { Inter, Space_Grotesk } from "next/font/google"
 import "./globals.css"
 import MiniAppReady from "../components/MiniAppReady"
 
-const PROD = "https://polls-nikhil.vercel.app"
+const PROD = "https://dare-me-eight.vercel.app"
 
 export const viewport: Viewport = {
   width: "device-width",

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import DareClient from "./DareClient"
 
-const PROD = "https://polls-nikhil.vercel.app"
+const PROD = "https://dare-me-eight.vercel.app"
 
 export async function generateMetadata({ params, searchParams }: { params: { id: string }, searchParams: { desc?: string, stake?: string, from?: string, to?: string, status?: string, t?: string } }): Promise<Metadata> {
   const url = `${PROD}/dare/${params.id}`
