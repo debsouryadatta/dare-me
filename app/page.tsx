@@ -5,32 +5,43 @@ import { sdk } from "@farcaster/miniapp-sdk"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Rocket, Trophy, Zap } from "lucide-react"
+import { useAccount } from "wagmi"
+import { SignInButton, useProfile } from "@farcaster/auth-kit"
 
-const BrandHeader = () => (
-  <div className="relative overflow-hidden rounded-b-[52px] bg-[#6A33FF] text-white pt-8 pb-16 px-6 shadow-xl">
-    <div className="flex items-center justify-between">
-      <div className="text-2xl font-extrabold font-display">ibet</div>
-      <div className="rounded-full px-4 py-2 text-sm bg-white/20 backdrop-blur-sm">0xf3…fe5gt</div>
-    </div>
-    <div className="mt-8 leading-[0.95]">
-      <div className="font-extrabold text-[56px] tracking-tight font-display flex flex-col">
-        <div className="flex items-center">
-          Bet
-          <Rocket className="ml-2 h-10 w-10" />
-        </div>
-        <div className="flex items-center">
-          Compete
-          <Zap className="ml-2 h-10 w-10" />
-        </div>
-        <div className="flex items-center">
-          Win
-          <Trophy className="ml-2 h-10 w-10" />
+const BrandHeader = () => {
+  const { address, isConnected } = useAccount()
+  const { profile, isAuthenticated } = useProfile()
+  const authKitAddress = profile?.verifications?.[0] ?? profile?.custody
+  const activeAddress = isConnected && address ? address : authKitAddress
+  const displayAddress = activeAddress ? `${activeAddress.slice(0, 6)}…${activeAddress.slice(-4)}` : (isAuthenticated ? '—' : 'Sign in')
+  return (
+    <div className="relative overflow-hidden rounded-b-[52px] bg-[#6A33FF] text-white pt-8 pb-16 px-6 shadow-xl">
+      <div className="flex items-center justify-between">
+        <div className="text-2xl font-extrabold font-display">ibet</div>
+        <div className="rounded-full px-4 py-2 text-sm bg-white/20 backdrop-blur-sm">
+          {!activeAddress && !isAuthenticated ? <SignInButton /> : displayAddress}
         </div>
       </div>
+      <div className="mt-8 leading-[0.95]">
+        <div className="font-extrabold text-[56px] tracking-tight font-display flex flex-col">
+          <div className="flex items-center">
+            Bet
+            <Rocket className="ml-2 h-10 w-10" />
+          </div>
+          <div className="flex items-center">
+            Compete
+            <Zap className="ml-2 h-10 w-10" />
+          </div>
+          <div className="flex items-center">
+            Win
+            <Trophy className="ml-2 h-10 w-10" />
+          </div>
+        </div>
+      </div>
+      {/* decorative fold removed */}
     </div>
-    {/* decorative fold removed */}
-  </div>
-)
+  )
+}
 
 type DareStatus = "pending" | "accepted" | "rejected" | "completed"
 
