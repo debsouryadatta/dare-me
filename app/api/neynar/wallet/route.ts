@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
 
     const ethAddresses: string[] =
       user?.verified_addresses?.eth_addresses || []
+    const custodyAddress: string | null = user?.custody_address || user?.custodyAddress || null
 
     if (!user) {
       return NextResponse.json(
@@ -41,21 +42,15 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    if (ethAddresses.length === 0) {
-      return NextResponse.json({
-        username,
-        fid: user.fid,
-        walletAddress: null,
-        message: "No verified Ethereum address found for this user.",
-      })
-    }
-
-    return NextResponse.json({
+    const payload = {
       username,
       fid: user.fid,
-      walletAddress: ethAddresses[0],
+      walletAddress: ethAddresses[0] || null,
       allVerifiedEthAddresses: ethAddresses,
-    })
+      custodyAddress,
+      hasVerifiedWallet: ethAddresses.length > 0,
+    }
+    return NextResponse.json(payload)
   } catch (error: any) {
     return NextResponse.json(
       {

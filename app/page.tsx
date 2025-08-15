@@ -5,14 +5,11 @@ import { sdk } from "@farcaster/miniapp-sdk"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Rocket, Trophy, Zap } from "lucide-react"
-import { useAccount } from "wagmi"
-import { SignInButton, useProfile } from "@farcaster/auth-kit"
+import { SignInButton } from "@farcaster/auth-kit"
+import { useAppState } from "@/components/AppStateProvider"
 
 const BrandHeader = () => {
-  const { address, isConnected } = useAccount()
-  const { profile, isAuthenticated } = useProfile()
-  const authKitAddress = profile?.verifications?.[0] ?? profile?.custody
-  const activeAddress = isConnected && address ? address : authKitAddress
+  const { activeAddress, isAuthenticated } = useAppState()
   const displayAddress = activeAddress ? `${activeAddress.slice(0, 6)}…${activeAddress.slice(-4)}` : (isAuthenticated ? '—' : 'Sign in')
   return (
     <div className="relative overflow-hidden rounded-b-[52px] bg-[#6A33FF] text-white pt-8 pb-16 px-6 shadow-xl">
